@@ -11,6 +11,7 @@ object Rutas {
 
     // Cliente
     const val MENU = "menu"
+    const val FAVORITOS = "favoritos"
     const val PEDIDOS_CLIENTE = "pedidos_cliente"
     const val PERFIL = "perfil"
     const val DETALLE_PRODUCTO = "producto/{id}"

@@ -12,9 +12,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -25,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -40,6 +44,8 @@ fun ProductoCard(
     p: Producto,
     modifier: Modifier = Modifier,
     onAgregar: (() -> Unit)? = null,
+    esFavorito: Boolean = false,
+    onFavorito: (() -> Unit)? = null,
     onClick: () -> Unit
 ) {
     Card(
@@ -54,15 +60,36 @@ fun ProductoCard(
                 .padding(10.dp)
                 .alpha(if (p.disponible) 1f else 0.65f)
         ) {
-            ProductoImagen(
-                imagen = p.imagen,
-                icono = p.icono,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(84.dp)
-                    .clip(RoundedCornerShape(10.dp)),
-                iconoTamano = 40.dp
-            )
+            Box {
+                ProductoImagen(
+                    imagen = p.imagen,
+                    icono = p.icono,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(84.dp)
+                        .clip(RoundedCornerShape(10.dp)),
+                    iconoTamano = 40.dp
+                )
+                if (onFavorito != null) {
+                    Box(
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(6.dp)
+                            .size(28.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
+                            .clickable { onFavorito() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            if (esFavorito) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            contentDescription = if (esFavorito) "Quitar de favoritos" else "Añadir a favoritos",
+                            tint = if (esFavorito) Color(0xFFE53935) else MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(17.dp)
+                        )
+                    }
+                }
+            }
             Spacer(Modifier.height(10.dp))
             Text(
                 p.nombre,

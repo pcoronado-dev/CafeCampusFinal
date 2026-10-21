@@ -3,6 +3,7 @@ package com.tecsup.cafecampus.data.prefs
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.tecsup.cafecampus.model.Rol
@@ -19,6 +20,7 @@ class PreferenciasStore(private val context: Context) {
         val MODO_OSCURO = booleanPreferencesKey("modoOscuro")
         val RECIBIR_PEDIDOS = booleanPreferencesKey("recibirPedidos")
         val NOTIFICACIONES = booleanPreferencesKey("notificaciones")
+        val FAVORITOS = stringSetPreferencesKey("favoritos")
     }
 
     // ---------- Lectura ----------
@@ -28,7 +30,20 @@ class PreferenciasStore(private val context: Context) {
 
     val notificaciones: Flow<Boolean> = context.dataStore.data.map { it[Claves.NOTIFICACIONES] ?: true }
 
+    /** Ids de los productos favoritos. */
+    val favoritos: Flow<Set<Int>> = context.dataStore.data.map { prefs ->
+        prefs[Claves.FAVORITOS].orEmpty().mapNotNull { it.toIntOrNull() }.toSet()
+    }
+
     // ---------- Escritura ----------
+    suspend fun alternarFavorito(productoId: Int) {
+        context.dataStore.edit { prefs ->
+            val actuales = prefs[Claves.FAVORITOS].orEmpty()
+            val id = productoId.toString()
+            prefs[Claves.FAVORITOS] = if (id in actuales) actuales - id else actuales + id
+        }
+    }
+
     suspend fun guardarPerfil(rol: Rol) {
         context.dataStore.edit { it[Claves.PERFIL] = rol.name }
     }

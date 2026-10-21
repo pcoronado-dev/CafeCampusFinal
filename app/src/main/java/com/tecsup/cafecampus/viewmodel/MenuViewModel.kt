@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tecsup.cafecampus.data.local.entity.Producto
 import com.tecsup.cafecampus.data.local.relation.PedidoConDetalle
+import com.tecsup.cafecampus.data.prefs.PreferenciasStore
 import com.tecsup.cafecampus.data.repository.CafeRepository
 import com.tecsup.cafecampus.model.Categorias
 import com.tecsup.cafecampus.model.ItemCarrito
@@ -18,7 +19,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MenuViewModel(private val repo: CafeRepository) : ViewModel() {
+class MenuViewModel(
+    private val repo: CafeRepository,
+    private val prefs: PreferenciasStore
+) : ViewModel() {
 
     // ---------- Productos (Flow -> StateFlow con stateIn) ----------
     val productos: StateFlow<List<Producto>> = repo.observarProductos()
@@ -45,6 +49,18 @@ class MenuViewModel(private val repo: CafeRepository) : ViewModel() {
                     p.nombre.contains(texto.trim(), ignoreCase = true)
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // ---------- Favoritos (persisten en DataStore) ----------
+    val favoritos: StateFlow<Set<Int>> = prefs.favoritos
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
+
+    val productosFavoritos: StateFlow<List<Producto>> =
+        combine(productos, favoritos) { lista, favs -> lista.filter { it.id in favs } }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun alternarFavorito(productoId: Int) {
+        viewModelScope.launch { prefs.alternarFavorito(productoId) }
+    }
 
     // ---------- Carrito ----------
     private val _carrito = MutableStateFlow<List<ItemCarrito>>(emptyList())

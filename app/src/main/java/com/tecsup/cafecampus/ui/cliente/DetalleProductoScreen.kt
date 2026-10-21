@@ -23,11 +23,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -45,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -61,12 +65,24 @@ import com.tecsup.cafecampus.viewmodel.MenuViewModel
 fun DetalleProductoScreen(productoId: Int, vm: MenuViewModel, onBack: () -> Unit) {
     val productos by vm.productos.collectAsState()
     val producto = productos.firstOrNull { it.id == productoId }
+    val favoritos by vm.favoritos.collectAsState()
+    val esFavorito = productoId in favoritos
 
     var cantidad by rememberSaveable { mutableIntStateOf(1) }
     var nota by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
-        topBar = { AppTopBar("Detalle del producto", onBack = onBack) },
+        topBar = {
+            AppTopBar("Detalle del producto", onBack = onBack, acciones = {
+                IconButton(onClick = { vm.alternarFavorito(productoId) }) {
+                    Icon(
+                        if (esFavorito) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = if (esFavorito) "Quitar de favoritos" else "Añadir a favoritos",
+                        tint = if (esFavorito) Color(0xFFE53935) else MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            })
+        },
         bottomBar = {
             if (producto != null) {
                 Surface(color = MaterialTheme.colorScheme.background) {

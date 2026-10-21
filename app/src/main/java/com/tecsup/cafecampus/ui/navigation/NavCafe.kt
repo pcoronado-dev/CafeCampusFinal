@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.Person
@@ -44,6 +45,7 @@ import com.tecsup.cafecampus.ui.admin.PanelScreen
 import com.tecsup.cafecampus.ui.admin.PedidosAdminScreen
 import com.tecsup.cafecampus.ui.cliente.ConfirmarPedidoScreen
 import com.tecsup.cafecampus.ui.cliente.DetalleProductoScreen
+import com.tecsup.cafecampus.ui.cliente.FavoritosScreen
 import com.tecsup.cafecampus.ui.cliente.LoginScreen
 import com.tecsup.cafecampus.ui.cliente.MenuScreen
 import com.tecsup.cafecampus.ui.cliente.MisPedidosScreen
@@ -62,6 +64,7 @@ private data class TabItem(val ruta: String, val titulo: String, val icono: Imag
 
 private val TABS_CLIENTE = listOf(
     TabItem(Rutas.MENU, "Menú", Icons.Filled.Home),
+    TabItem(Rutas.FAVORITOS, "Favoritos", Icons.Filled.Favorite),
     TabItem(Rutas.PEDIDOS_CLIENTE, "Pedidos", Icons.Filled.Receipt),
     TabItem(Rutas.PERFIL, "Perfil", Icons.Filled.Person)
 )
@@ -192,6 +195,13 @@ fun NavCafe(
                         cafeteriaAbierta = cafeteriaAbierta,
                         onProducto = { nav.navigate(Rutas.detalleProducto(it)) },
                         onBolsa = { nav.navigate(Rutas.CONFIRMAR) }
+                    )
+                }
+                composable(Rutas.FAVORITOS) {
+                    FavoritosScreen(
+                        vm = menuVm,
+                        onProducto = { nav.navigate(Rutas.detalleProducto(it)) },
+                        onVerMenu = { irATab(Rutas.GRAFO_CLIENTE, Rutas.MENU) }
                     )
                 }
                 composable(Rutas.PEDIDOS_CLIENTE) {

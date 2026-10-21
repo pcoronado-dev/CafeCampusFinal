@@ -58,6 +58,7 @@ fun MenuScreen(
     val categoria by vm.categoria.collectAsState()
     val busqueda by vm.busqueda.collectAsState()
     val carrito by vm.carrito.collectAsState()
+    val favoritos by vm.favoritos.collectAsState()
 
     Column(
         Modifier
@@ -156,7 +157,12 @@ fun MenuScreen(
             contentPadding = PaddingValues(vertical = 8.dp)
         ) {
             items(productos, key = { it.id }) { p ->
-                ProductoCard(p, onAgregar = { vm.agregar(p, 1) }) { onProducto(p.id) }
+                ProductoCard(
+                    p,
+                    onAgregar = { vm.agregar(p, 1) },
+                    esFavorito = p.id in favoritos,
+                    onFavorito = { vm.alternarFavorito(p.id) }
+                ) { onProducto(p.id) }
             }
         }
     }

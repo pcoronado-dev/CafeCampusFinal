@@ -13,7 +13,7 @@ class CafeViewModelFactory(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val vm: ViewModel = when {
-            modelClass.isAssignableFrom(MenuViewModel::class.java) -> MenuViewModel(repo)
+            modelClass.isAssignableFrom(MenuViewModel::class.java) -> MenuViewModel(repo, prefs)
             modelClass.isAssignableFrom(SesionViewModel::class.java) -> SesionViewModel(repo, prefs)
             modelClass.isAssignableFrom(PedidosClienteViewModel::class.java) -> PedidosClienteViewModel(repo)
             modelClass.isAssignableFrom(PanelAdminViewModel::class.java) -> PanelAdminViewModel(repo)
